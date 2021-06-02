@@ -20,10 +20,13 @@ namespace WebApplication8
 		static string[] dates;
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			europa = GetSqlData(22, "DATA2", "Counter","data");
-			america = GetSqlData(22, "DATA1", "Counter","data");
-			dates =  GetSqlData(22, "Date", "Counter", "data");
-
+			for (int i=0; i<1000; i++) {
+				int DATE = 2000 + (i * 10);
+				executequery("INSERT INTO DATA(DATA1, Date,DATA2)VALUES(" + i +", " + DATE.ToString() + "," + (1000-i) +");",false); 
+			}
+			europa = GetSqlData(50, "DATA2", "Counter","data");
+			america = GetSqlData(50, "DATA1", "Counter","data");
+			dates =  GetSqlData(50, "Date", "Counter", "data");
 			EUROPE = ConvertToJava(europa);
 			AMERICA = ConvertToJava(america);
 			DATES = ConvertToJava(dates);
@@ -41,7 +44,16 @@ namespace WebApplication8
 			OUT += "]";
 			return OUT;
 		}
-
+		string executequery(string Query, bool expectingreturn)
+		{
+			SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["RegiConnectionString"].ConnectionString);
+			SqlCommand cmd = new SqlCommand(Query, conn);
+			conn.Open();
+			String returnedData = "NULL";
+			if (expectingreturn == false) {cmd.ExecuteScalar(); } else { returnedData = cmd.ExecuteScalar().ToString(); }
+			conn.Close();
+			return returnedData;
+		}
 		static string[] GetSqlData(int length,string CollumName, string CounterName, string TableName)
 		{
 			string[] DATA = new string[length];
