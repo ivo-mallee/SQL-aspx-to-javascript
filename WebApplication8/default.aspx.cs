@@ -7,37 +7,28 @@ using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Configuration;
 using SqlConnections;
-
 namespace WebApplication8
 {
+
 	public partial class _default : System.Web.UI.Page
 	{
-		public string EUROPE;
-		public string AMERICA;
-		public string DATES;
-
-		static string[] europa;
-		static string[] america;
-		static string[] dates;
+		public string HTMLDATA = "";
 		protected void Page_Load(object sender, EventArgs e)
 		{
-			SqlConnections.SqlConnection SERVER1 = new SqlConnections.SqlConnection();
-			SERVER1.connectionstring = "RegiConnectionString";
-
-			for (int i=0; i<1000; i++) {
-				int DATE = 2000 + (i * 10);
-				SERVER1.executequery("INSERT INTO DATA(DATA1, Date,DATA2)VALUES(" + i +", " + DATE.ToString() + "," + (1000-i) +");",false); 
+			SqlConnect server = new SqlConnect();
+			server.connectionstring = "MedischeDatabase";
+			string [,] DATA = server.ExecuteQuery("select TOP (500) * from [V_Equipment_Contract]");
+			int RowCount = DATA.GetLength(0);
+			int CollumCount = DATA.GetLength(1);
+			for (int Y=0; Y< RowCount; Y++)
+			{
+				HTMLDATA += "<tr>";
+				for (int X =2; X<CollumCount; X++) 
+				{
+					HTMLDATA += "<td class='" + DATA[Y, X]  + "'> " + DATA[Y, X] + " </td>";
+				}
+				HTMLDATA += "</tr> \n";
 			}
-
-			europa = SERVER1.GetSqlData(500, "DATA2", "Counter","data");
-			america = SERVER1.GetSqlData(500, "DATA1", "Counter","data");
-			dates = SERVER1.GetSqlData(500, "Date", "Counter", "data");
-			EUROPE = SERVER1.ConvertToJava(europa);
-			AMERICA = SERVER1.ConvertToJava(america);
-			DATES = SERVER1.ConvertToJava(dates);
-			
-
-
 
 
 
